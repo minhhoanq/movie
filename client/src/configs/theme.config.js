@@ -8,8 +8,8 @@ export const themeModes = {
 
 const themeConfigs = {
     custom: ({ mode }) => {
-        const customPalette = (mode) =>
-            themeModes.dark
+        const customPalette =
+            mode === themeModes.dark
                 ? {
                       primary: {
                           main: "#ff0000",
