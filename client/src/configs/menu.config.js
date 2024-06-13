@@ -1,56 +1,56 @@
-import HomeOutLinedIcon from "@mui/icons-material/HomeOutlined";
-import SlideshowOutLinedIcon from "@mui/icons-material/SlideshowOutlined";
-import LiveTvOutLinedIcon from "@mui/icons-material/LiveTvOutLined";
-import FavoriteBorderOutLinedIcon from "@mui/icons-material/FavoriteBorderOutLined";
-import SearchOutLinedIcon from "@mui/icons-material/SearchOutLinedd";
-import RatingReviewOutLinedIcon from "@mui/icons-material/RatingReviewOutLined";
-import LockResetOutLinedIcon from "@mui/icons-material/LockResetOutLined";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import SlideshowOutlinedIcon from "@mui/icons-material/SlideshowOutlined";
+import LiveTvOutlinedIcon from "@mui/icons-material/LiveTvOutlined";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
+import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 
 const main = [
     {
         display: "home",
         path: "/",
-        icon: <HomeOutLinedIcon />,
+        icon: <HomeOutlinedIcon />,
         state: "home",
     },
     {
         display: "movies",
         path: "/movie",
-        icon: <SlideshowOutLinedIcon />,
+        icon: <SlideshowOutlinedIcon />,
         state: "movie",
     },
     {
         display: "tv series",
         path: "/tv",
-        icon: <LiveTvOutLinedIcon />,
+        icon: <LiveTvOutlinedIcon />,
         state: "tv",
     },
     {
         display: "search",
         path: "/search",
-        icon: <SearchOutLinedIcon />,
+        icon: <SearchOutlinedIcon />,
         state: "search",
     },
     {
         display: "favorites",
         path: "/favorites",
-        icon: <FavoriteBorderOutLinedIcon />,
+        icon: <FavoriteBorderOutlinedIcon />,
         state: "favorite",
     },
     {
         display: "reviews",
         path: "/reviews",
-        icon: <RatingReviewOutLinedIcon />,
+        icon: <RateReviewOutlinedIcon />,
         state: "reviews",
     },
     {
         display: "password update",
         path: "/password-update",
-        icon: <LockResetOutLinedIcon />,
+        icon: <LockResetOutlinedIcon />,
         state: "password.update",
     },
 ];
 
-const menuConfigs = { main, user };
+const menuConfigs = { main };
 
 export default menuConfigs;
