@@ -9,12 +9,12 @@ const mediaCategory = {
 };
 
 const backdropPath = (imgEndpoint) =>
-    `https://iamge.tmdb.org/t/p/original${imgEndpoint}`;
+    `https://image.tmdb.org/t/p/original${imgEndpoint}`;
 const posterPath = (imgEndpoint) =>
-    `https://iamge.tmdb.org/t/p/original${imgEndpoint}`;
+    `https://image.tmdb.org/t/p/original${imgEndpoint}`;
 const youtubePath = (videoId) => `https://ww.youtube.com/embed/${videoId}`;
 
-const tmdbCongfigs = {
+const tmdbConfigs = {
     mediaType,
     mediaCategory,
     backdropPath,
@@ -22,4 +22,4 @@ const tmdbCongfigs = {
     youtubePath,
 };
 
-export default tmdbCongfigs;
+export default tmdbConfigs;
