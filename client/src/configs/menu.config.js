@@ -31,6 +31,9 @@ const main = [
         icon: <SearchOutlinedIcon />,
         state: "search",
     },
+];
+
+const user = [
     {
         display: "favorites",
         path: "/favorites",
@@ -51,6 +54,6 @@ const main = [
     },
 ];
 
-const menuConfigs = { main };
+const menuConfigs = { main, user };
 
 export default menuConfigs;
