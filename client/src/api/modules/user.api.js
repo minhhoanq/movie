@@ -11,7 +11,7 @@ const userEndpoints = {
 };
 
 const userApi = {
-    sigin: async ({ username, password }) => {
+    signin: async ({ username, password }) => {
         try {
             const response = await publicClient.post(userEndpoints.signin, {
                 username,
@@ -19,11 +19,12 @@ const userApi = {
             });
 
             return { response };
-        } catch (error) {
-            return { error };
+        } catch (err) {
+            console.log("cehcek");
+            return { err };
         }
     },
-    sigup: async ({ username, password, confirmPassword, displayName }) => {
+    singup: async ({ username, password, confirmPassword, displayName }) => {
         try {
             const response = await publicClient.post(userEndpoints.signup, {
                 username,
@@ -33,8 +34,8 @@ const userApi = {
             });
 
             return { response };
-        } catch (error) {
-            return { error };
+        } catch (err) {
+            return { err };
         }
     },
     getInfo: async () => {
@@ -42,8 +43,8 @@ const userApi = {
             const response = await publicClient.get(userEndpoints.getInfo);
 
             return { response };
-        } catch (error) {
-            return { error };
+        } catch (err) {
+            return { err };
         }
     },
     updatePassword: async ({ username, newPassword, confirmPassword }) => {
@@ -54,20 +55,20 @@ const userApi = {
             );
 
             return { response };
-        } catch (error) {
-            return { error };
+        } catch (err) {
+            return { err };
         }
     },
     getFavorites: async () => {
         try {
-        } catch (error) {
-            return { error };
+        } catch (err) {
+            return { err };
         }
     },
     addFavorite: async () => {
         try {
-        } catch (error) {
-            return { error };
+        } catch (err) {
+            return { err };
         }
     },
 };

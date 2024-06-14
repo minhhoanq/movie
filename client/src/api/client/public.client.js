@@ -1,7 +1,7 @@
 import axios from "axios";
 import queryString from "query-string";
 
-const baseURL = "http://localhost:5000/api/v1";
+const baseURL = "http://localhost:5001/api/v1";
 
 const publicClient = axios.create({
     baseURL,
@@ -24,8 +24,8 @@ publicClient.interceptors.response.use(
         if (response && response.data) return response.data;
         return response;
     },
-    (error) => {
-        return error.response.data;
+    (err) => {
+        throw err.response.data;
     }
 );
 
