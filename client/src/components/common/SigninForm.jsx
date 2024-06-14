@@ -35,7 +35,7 @@ const SigninForm = ({ switchAuthState }) => {
         console.log(response);
         console.log(err);
         if (response) {
-            SigninForm.resetForm();
+            // SigninForm.resetForm();
             dispatch(setUser(response));
             dispatch(setAuthModalOpen(false));
             toast.success("Sign in successfully");
@@ -56,7 +56,7 @@ const SigninForm = ({ switchAuthState }) => {
                         min: 3,
                         required: "Username is required",
                     })}
-                    // error={errors.username}
+                    error={errors.username}
                     // helperText={errors.username}
                 />
 

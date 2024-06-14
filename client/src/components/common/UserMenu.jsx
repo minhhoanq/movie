@@ -29,6 +29,7 @@ const UserMenu = () => {
                             cursor: "pointer",
                             userSelect: "none",
                         }}
+                        onClick={toggleMenu}
                     >
                         {user.displayName}
                     </Typography>
@@ -50,7 +51,7 @@ const UserMenu = () => {
                                     disableTypography
                                     primary={
                                         <Typography textTransform={"uppercase"}>
-                                            {item.displayName}
+                                            {item.display}
                                         </Typography>
                                     }
                                 />
