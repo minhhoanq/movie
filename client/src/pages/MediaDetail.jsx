@@ -24,6 +24,7 @@ import { addFavorite, removeFavorite } from "../redux/features/useSlice";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 
 import CastSlide from "../components/common/CastSlide";
+import MediaVideoSlide from "../components/common/MediaVideoSlide";
 
 const MediaDetail = () => {
     const { mediaType, mediaId } = useParams();
@@ -64,6 +65,7 @@ const MediaDetail = () => {
         if (!user) return dispatch(setAuthModalOpen(true));
         if (onRequest) return;
         if (isFavorite) {
+            onRemoveFavorite();
             return;
         }
 
@@ -87,7 +89,26 @@ const MediaDetail = () => {
         }
     };
 
-    const onRemoveFavorite = async () => {};
+    const onRemoveFavorite = async () => {
+        if (onRequest) return;
+
+        setOnRequest(true);
+        const favorite = listFavorites.find(
+            (e) => e.mediaId.toString() === media.id.toString()
+        );
+        const { response, err } = await favoriteApi.remove({
+            favoriteId: favorite.id,
+        });
+
+        setOnRequest(false);
+
+        if (err) toast.error(err.message);
+        if (response) {
+            dispatch(removeFavorite(favorite));
+            setIsFavorite(false);
+            toast.success("Remove favorite success");
+        }
+    };
 
     return media ? (
         <>
@@ -247,6 +268,22 @@ const MediaDetail = () => {
                     </Box>
                 </Box>
                 {/* media content */}
+
+                {/* media video */}
+                <div ref={videoRef} style={{ paddingTop: "2rem" }}>
+                    <Container header={"Videos"}>
+                        <MediaVideoSlide
+                            videos={media.videos.results.splice(0, 5)}
+                        />
+                    </Container>
+                </div>
+                {/* media video */}
+
+                {/* media backdrop */}
+                {media.images.backdrops.length > 0 && (
+                    <Container header={"backdrops"}></Container>
+                )}
+                {/* media backdrop */}
             </Box>
         </>
     ) : null;
