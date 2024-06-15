@@ -5,7 +5,7 @@ const mediaType = {
 
 const mediaCategory = {
     popular: "popular",
-    topRated: "topRated",
+    topRated: "top_rated",
 };
 
 const backdropPath = (imgEndpoint) =>
