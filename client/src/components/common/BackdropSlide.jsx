@@ -7,7 +7,7 @@ import { Box } from "@mui/material";
 const BackdropSlide = ({ backdrops }) => {
     return (
         <NavigationSwiper>
-            {backdrops.splice(0, 10).map((item, index) => (
+            {[...backdrops].splice(0, 10).map((item, index) => (
                 <SwiperSlide key={index}>
                     <Box
                         sx={{
