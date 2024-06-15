@@ -73,7 +73,7 @@ const Sidebar = ({ open, toggleSidebar }) => {
                         <Typography variant="h6" marginBottom={"20px"}>
                             MENU
                         </Typography>
-                        {menuConfigs.main.map((item, index) => (
+                        {menuConfigs.user.map((item, index) => (
                             <ListItemButton
                                 key={index}
                                 sx={{
