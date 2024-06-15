@@ -25,6 +25,10 @@ import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlin
 
 import CastSlide from "../components/common/CastSlide";
 import MediaVideoSlide from "../components/common/MediaVideoSlide";
+import BackdropSlide from "../components/common/BackdropSlide";
+import PosterSlide from "../components/common/PosterSlide";
+import RecommendSlide from "../components/common/RecommendSlide";
+import MediaSlide from "../components/common/MediaSlide";
 
 const MediaDetail = () => {
     const { mediaType, mediaId } = useParams();
@@ -281,9 +285,40 @@ const MediaDetail = () => {
 
                 {/* media backdrop */}
                 {media.images.backdrops.length > 0 && (
-                    <Container header={"backdrops"}></Container>
+                    <Container header={"backdrops"}>
+                        <BackdropSlide backdrops={media.images.backdrops} />
+                    </Container>
                 )}
                 {/* media backdrop */}
+
+                {/* media posters */}
+                {media.images.posters.length > 0 && (
+                    <Container header={"posters"}>
+                        <PosterSlide posters={media.images.posters} />
+                    </Container>
+                )}
+                {/* media posters */}
+
+                {/* media reviews */}
+
+                {/* media reviews */}
+
+                {/* media recommends */}
+                <Container header={"you may also like"}>
+                    {media.recommend.length > 0 && (
+                        <RecommendSlide
+                            medias={media.recommend}
+                            mediaType={mediaType}
+                        />
+                    )}
+                    {media.recommend.length === 0 && (
+                        <MediaSlide
+                            mediaType={mediaType}
+                            mediaCategory={tmdbConfigs.mediaCategory.topRated}
+                        />
+                    )}
+                </Container>
+                {/* media recommends */}
             </Box>
         </>
     ) : null;
