@@ -33,6 +33,7 @@ app.use(compression());
 //init database
 db();
 //init router
+app.use("/", require("./routes/index"));
 
 // handle errors
 app.use((req, res, next) => {
