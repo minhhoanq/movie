@@ -1,10 +1,11 @@
-import express from "express";
-import morgan from "morgan";
-import helmet from "helmet";
-import lodash from "lodash";
-import compression from "compression";
-import dotenv from "dotenv";
-import cors from "cors";
+const express = require("express");
+const morgan = require("morgan");
+const helmet = require("helmet");
+const lodash = require("lodash");
+const compression = require("compression");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const db = require("./databases/init.mysql");
 dotenv.config();
 
 const app = express();
@@ -30,7 +31,7 @@ app.use(helmet());
 app.use(compression());
 
 //init database
-
+db();
 //init router
 
 // handle errors
@@ -50,4 +51,4 @@ app.use((error, req, res, next) => {
     });
 });
 
-export default app;
+module.exports = app;
