@@ -25,6 +25,11 @@ const createTokensPair = async (payload, publicKey, privateKey) => {
     }
 };
 
+const decodeJWT = async (accessToken) => {
+    return await JWT.verify(accessToken, process.env.PUBLIC_KEY);
+};
+
 module.exports = {
     createTokensPair,
+    decodeJWT,
 };

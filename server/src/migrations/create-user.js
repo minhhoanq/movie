@@ -54,7 +54,7 @@ module.exports = {
                 defaultValue: false,
             },
             passwordChangedAt: {
-                type: Sequelize.INTEGER,
+                type: Sequelize.STRING,
                 allowNull: true,
             },
             passwordResetToken: {

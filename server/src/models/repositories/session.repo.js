@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const model = require("../../models");
 
 /**
@@ -25,6 +26,48 @@ const createSession = async ({
     });
 };
 
+const findOneSession = async (email, clientAgent, clientIp) => {
+    return await model.Session.findOne({
+        email,
+        clientAgent,
+        clientIp,
+    });
+};
+
+const updateSession = async ({
+    email,
+    clientAgent,
+    clientIp,
+    refreshToken,
+    expiredAt,
+}) => {
+    return await model.Session.update(
+        {
+            refreshToken,
+            expiredAt,
+        },
+        {
+            where: {
+                email,
+                clientAgent,
+                clientIp,
+            },
+        }
+    );
+};
+
+const deleteSession = async (sessionId) => {
+    return await model.Session.destroy({
+        where: {
+            id: sessionId,
+        },
+        force: true,
+    });
+};
+
 module.exports = {
     createSession,
+    findOneSession,
+    updateSession,
+    deleteSession,
 };

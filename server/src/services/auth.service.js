@@ -5,18 +5,28 @@ const {
     findUserByUsername,
     deleteUserByEmail,
     findUserByVerifyCode,
+    findUserById,
+    findOneUser,
+    updateUser,
 } = require("../models/repositories/user.repo");
 const {
     BadRequestError,
     AuthFailureError,
     Unauthorized,
+    NotFoundError,
 } = require("../core/error.response");
 const bcrypt = require("bcrypt");
 const makeVerification = require("uniqid");
-const { confirmSignup } = require("../utils/mail.html");
+const { confirmSignup, resetPasswordMail } = require("../utils/mail.html");
 const sendMail = require("../helpers/sendMaill");
-const { createTokensPair } = require("../auth/authUtil");
-const { createSession } = require("../models/repositories/session.repo");
+const { createTokensPair, decodeJWT } = require("../auth/authUtil");
+const {
+    createSession,
+    findOneSession,
+    updateSession,
+    deleteSession,
+} = require("../models/repositories/session.repo");
+const crypto = require("crypto");
 
 class AuthService {
     /**
@@ -25,7 +35,9 @@ class AuthService {
      * @returns data hashed
      */
     static hashData = async (data) => {
-        return await bcrypt.hash(data, 10);
+        const salt = await bcrypt.genSalt(10);
+
+        return await bcrypt.hash(data, salt);
     };
 
     /**
@@ -63,7 +75,8 @@ class AuthService {
         const usernameExist = await findUserByUsername(username);
         if (usernameExist) throw new BadRequestError("Username has been used!");
         //password hash
-        const passwordHash = await this.hashData(password);
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
 
         // email hash
         const verificationCode = makeVerification();
@@ -157,6 +170,212 @@ class AuthService {
                 accessToken: tokens.accessToken,
             },
         };
+    };
+
+    /**
+     *
+     * @param {*} param0
+     * @param {*} clientAgent
+     * @param {*} clientIp
+     * @returns
+     */
+    static signin = async ({ email, password }, clientAgent, clientIp) => {
+        const user = await findUserByEmail(email);
+        if (!user) throw new Unauthorized("Email is not correct!");
+
+        console.log(password + " | " + user.password);
+        const matchPassword = await bcrypt.compare(password, user.password);
+        if (!matchPassword) throw new Unauthorized("Invalid password");
+
+        const payload = {
+            userId: user.id,
+            roleId: user.roleId,
+        };
+
+        //create accessToken, refreshToken
+        const tokens = await createTokensPair(
+            payload,
+            process.env.PUBLIC_KEY_JWT,
+            process.env.PRIVATE_KEY_JWT
+        );
+
+        const sessionExist = await findOneSession(
+            user.email,
+            clientAgent,
+            clientIp
+        );
+
+        let session;
+        if (sessionExist) {
+            //update session user
+            session = await updateSession({
+                email: sessionExist.email,
+                clientAgent: sessionExist.clientAgent,
+                clientIp: sessionExist.clientIp,
+                refreshToken: tokens.refreshToken,
+                expiredAt: 604800,
+            });
+        } else {
+            //create session user
+            session = await createSession({
+                email: user.email,
+                clientAgent: clientAgent,
+                clientIp: clientIp,
+                refreshToken: tokens.refreshToken,
+                expiredAt: 604800,
+            });
+        }
+
+        if (!session) {
+            throw new Unauthorized("Unable to create session");
+        }
+
+        return {
+            user: {
+                id: user.id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+            },
+            tokens: {
+                accessToken: tokens.accessToken,
+            },
+        };
+    };
+
+    /**
+     *
+     * @param {*} session
+     * @returns
+     */
+    static signout = async (session) => {
+        const deleteSessionUser = await deleteSession(session.id);
+        if (!deleteSessionUser)
+            throw new BadRequestError("Error signout! Pls try again");
+
+        return true;
+    };
+
+    static refreshTokenUser = async (
+        user,
+        refreshToken,
+        session,
+        clientAgent,
+        clientIp
+    ) => {
+        const { userId } = user;
+        if (session.refreshToken !== refreshToken)
+            throw new Unauthorized("Invalid refresh token!");
+
+        const userExist = await findUserById(userId);
+        if (!userExist) throw new NotFoundError("User not found!");
+
+        const payload = {
+            userId: userExist.id,
+            roleId: userExist.roleId,
+        };
+
+        //create accessToken, refreshToken
+        const tokens = await createTokensPair(
+            payload,
+            process.env.PUBLIC_KEY_JWT,
+            process.env.PRIVATE_KEY_JWT
+        );
+
+        const sessionExist = await findOneSession(
+            user.email,
+            clientAgent,
+            clientIp
+        );
+
+        if (!sessionExist) throw new NotFoundError("Session not found");
+
+        await updateSession({
+            email: sessionExist.email,
+            clientAgent: sessionExist.clientAgent,
+            clientIp: sessionExist.clientIp,
+            refreshToken: tokens.refreshToken,
+            expiredAt: 604800,
+        });
+
+        return {
+            user: {
+                id: userExist.id,
+                email: userExist.email,
+                firstName: userExist.firstName,
+                lastName: userExist.lastName,
+            },
+            tokens: {
+                accessToken: tokens.accessToken,
+            },
+        };
+    };
+
+    static getMe = async (accessToken) => {
+        const { userId } = await decodeJWT(accessToken);
+        const user = await findUserById(userId);
+        return {
+            user: {
+                id: user.id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+            },
+        };
+    };
+
+    static forgotPassword = async ({ email }) => {
+        if (!email) throw new AuthFailureError("Missing email!");
+        const user = await findUserByEmail(email);
+        if (!user) throw new NotFoundError("User not found!");
+
+        const resetTokenPassword = user.createPasswordChangedToken();
+        console.log(resetTokenPassword);
+
+        await user.save();
+
+        const html = resetPasswordMail(resetTokenPassword);
+        const data = {
+            email: user.email,
+            html,
+            subject: "Forgot password!",
+        };
+
+        await sendMail(data);
+
+        return true;
+    };
+
+    static resetPassword = async ({ newPassword, tokenPassword }) => {
+        if (!newPassword || !tokenPassword)
+            throw new BadRequestError("Missing data!");
+
+        const passwordResetToken = crypto
+            .createHash("sha256")
+            .update(tokenPassword)
+            .digest("hex");
+
+        const dateNow = Date.now();
+
+        const user = await findOneUser({
+            passwordResetToken: passwordResetToken,
+            passwordResetExpires: dateNow.toString(),
+        });
+
+        if (!user)
+            throw new AuthFailureError(
+                "The data is invalid or you have timed out"
+            );
+
+        const hashedPassword = await this.hashData(newPassword);
+
+        user.password = hashedPassword;
+        user.passwordResetToken = "";
+        user.passwordChangedAt = dateNow.toString();
+        user.passwordResetExpires = "";
+        user.save();
+
+        return user;
     };
 }
 

@@ -1,4 +1,5 @@
 "use strict";
+const crypto = require("crypto");
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class User extends Model {
@@ -7,6 +8,16 @@ module.exports = (sequelize, DataTypes) => {
          * This method is not a part of Sequelize lifecycle.
          * The `models/index` file will call this method automatically.
          */
+        createPasswordChangedToken() {
+            const resetTokenPassword = crypto.randomBytes(32).toString("hex");
+            this.passwordResetToken = crypto
+                .createHash("sha256")
+                .update(resetTokenPassword)
+                .digest("hex");
+            this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+            return resetTokenPassword;
+        }
+
         static associate(models) {
             // define association here
             User.belongsTo(models.Role, {
